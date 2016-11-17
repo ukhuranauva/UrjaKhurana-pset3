@@ -1,43 +1,59 @@
 package com.example.urja.urjakhurana_pset3;
 
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 import android.content.Context;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.concurrent.ExecutionException;
+
 
 public class MovieAsyncTask extends AsyncTask<String, Integer, String> {
 
-    MainActivity activity;
+    ResultActivity activity;
     Context context;
 
-    public MovieAsyncTask(MainActivity activity) {
+    public MovieAsyncTask(ResultActivity activity) {
         this.activity = activity;
         this.context = this.activity.getApplicationContext();
     }
 
     protected void onPreExecute() {
-        Toast.makeText(context, "Fetching data", Toast.LENGTH_LONG);
+        Toast.makeText(context, "Searching for movie", Toast.LENGTH_SHORT).show();
     }
 
     protected String doInBackground(String... params) {
+        // get results of search
         return HttpRequestHelper.downloadFromServer(params);
     }
 
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
         MovieData movieData = null;
-        if (result.length() == 0) {
-            Toast.makeText(context, "No data was found", Toast.LENGTH_LONG);
+        Bitmap bmp;
+        // if nothing is found
+        if (result.equals("{\"Response\":\"False\",\"Error\":\"Movie not found!\"}")) {
+            Toast.makeText(context, "No data was found", Toast.LENGTH_LONG).show();
         } else {
             try {
+                // get all the information of the movie from the json file
                 JSONObject readObj = new JSONObject(result);
                 String plot = readObj.getString("Plot");
                 String title = readObj.getString("Title");
-                movieData = new MovieData(title, plot);
-            } catch (JSONException e) {
+                String posterUrl = readObj.getString("Poster");
+                String year = readObj.getString("Year");
+                String director = readObj.getString("Director");
+                String actors = readObj.getString("Actors");
+                // get image from URL of image by using asynctask
+                ImageFromURL image = new ImageFromURL(this);
+                bmp = image.execute(posterUrl).get();
+                // make movie object by connecting all data of the movie with each other
+                movieData = new MovieData(title, plot, bmp, year, director, actors);
+            } catch (JSONException | InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
             this.activity.setData(movieData);

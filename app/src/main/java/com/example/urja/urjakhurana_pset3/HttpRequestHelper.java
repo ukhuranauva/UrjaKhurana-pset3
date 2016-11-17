@@ -1,4 +1,5 @@
 package com.example.urja.urjakhurana_pset3;
+
 import java.net.URL;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -9,10 +10,15 @@ import java.io.IOException;
 public class HttpRequestHelper {
 
     protected static synchronized String downloadFromServer(String... params) {
+        // initialize string for result
         String result = "";
+        // one part of the url
         String url1 = "http://www.omdbapi.com/?t=";
+        // second part of url
         String url2 = "&y=&plot=short&r=json";
+        // get movie name
         String title = params[0];
+        // combine url to get the right search url
         String completeUrl = url1 + title + url2;
         URL url = null;
 
@@ -27,8 +33,10 @@ public class HttpRequestHelper {
             try {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
-                Integer responseCode = connection.getResponseCode(); // wel of niet juiste antwoord (200-299)
+                // right or wrong answer
+                Integer responseCode = connection.getResponseCode();
                 if (200 <= responseCode && responseCode <= 299) {
+                    // read result of search query
                     BufferedReader bf = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                     String line;
                     while ((line = bf.readLine()) != null) {
@@ -36,7 +44,6 @@ public class HttpRequestHelper {
                     }
                 } else {
                     BufferedReader bf = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                    // Communicate correct error
                 }
             } catch (IOException e) {
                 e.printStackTrace();
