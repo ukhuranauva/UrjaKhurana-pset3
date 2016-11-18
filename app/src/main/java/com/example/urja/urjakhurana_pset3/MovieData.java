@@ -11,6 +11,7 @@ public class MovieData {
     String director;
     String actors;
 
+    // constructor of object
     public MovieData(String title, String description, Bitmap poster, String year, String director, String actors) {
         this.title = title;
         this.description = description;

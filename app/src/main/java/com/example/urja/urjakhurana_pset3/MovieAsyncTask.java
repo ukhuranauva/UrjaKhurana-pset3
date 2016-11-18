@@ -2,7 +2,6 @@ package com.example.urja.urjakhurana_pset3;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 import android.content.Context;
 
@@ -17,6 +16,7 @@ public class MovieAsyncTask extends AsyncTask<String, Integer, String> {
     ResultActivity activity;
     Context context;
 
+    // constructor
     public MovieAsyncTask(ResultActivity activity) {
         this.activity = activity;
         this.context = this.activity.getApplicationContext();
@@ -37,7 +37,9 @@ public class MovieAsyncTask extends AsyncTask<String, Integer, String> {
         Bitmap bmp;
         // if nothing is found
         if (result.equals("{\"Response\":\"False\",\"Error\":\"Movie not found!\"}")) {
-            Toast.makeText(context, "No data was found", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "No data was found", Toast.LENGTH_SHORT).show();
+            // close screen since no results
+            this.activity.finish();
         } else {
             try {
                 // get all the information of the movie from the json file

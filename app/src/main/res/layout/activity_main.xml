@@ -13,7 +13,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:text="My Watchlist"
+        android:textSize="20dp"
+        android:textStyle="bold"
         android:id="@+id/textView" />
 
     <EditText

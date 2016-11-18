@@ -1,5 +1,6 @@
 package com.example.urja.urjakhurana_pset3;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,7 +26,7 @@ public class ResultActivity extends AppCompatActivity {
             // display button to add movie to watchlist if movie was searched for
             Button addButton = (Button) findViewById(R.id.addButton);
             addButton.setVisibility(addButton.VISIBLE);
-        } else if (activity.equals("watch")) {
+        }  else if (activity.equals("watch")) {
             // display button to removie from watchlist if movie was tapped on from watchlist
             Button removeButton = (Button) findViewById(R.id.removeButton);
             removeButton.setVisibility(removeButton.VISIBLE);
@@ -58,10 +59,13 @@ public class ResultActivity extends AppCompatActivity {
     public void addMovie(View view) {
         TextView titleView = (TextView) findViewById(R.id.nameMovie);
         String name = titleView.getText().toString();
-        // save name of the movie to watchlist
+        // gets saved movies
         SharedPreferences prefs = this.getSharedPreferences("settings", this.MODE_APPEND);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("movies", name);
+        String savedMovies = prefs.getString("movies", "");
+        // add movie that has to be saved to saved movies with seperator
+        String movieNames = savedMovies + name + '*';
+        editor.putString("movies", movieNames);
         editor.commit();
         Toast.makeText(this, "Saved movie", Toast.LENGTH_SHORT).show();
         // let button disappear since it is not useful anymore
@@ -69,13 +73,24 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void removeMovie(View view) {
-        SharedPreferences prefs = this.getSharedPreferences("settings", this.MODE_APPEND);
+        TextView titleView = (TextView) findViewById(R.id.nameMovie);
+        String name = titleView.getText().toString();
+        SharedPreferences prefs = this.getSharedPreferences("settings", this.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        // delete movie from watchlist
-        editor.remove("movies");
+        // get saved movies
+        String savedMovies = prefs.getString("movies", "");
+        // add seperator to movie
+        String deletedMovie = name + '*';
+        // delete movie from the saved movies
+        String newMovies = savedMovies.replace(deletedMovie, "");
+        editor.putString("movies", newMovies);
         editor.commit();
         Toast.makeText(this, "Seen", Toast.LENGTH_SHORT).show();
         // let button disappear since it is not useful anymore
         view.setVisibility(view.INVISIBLE);
+        // go back to up to date watchlist
+        Intent resultPage = new Intent(this, WatchListActivity.class);
+        startActivity(resultPage);
+        finish();
     }
 }
